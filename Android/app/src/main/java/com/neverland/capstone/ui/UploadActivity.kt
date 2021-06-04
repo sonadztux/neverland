@@ -12,12 +12,29 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.neverland.capstone.R
+import com.neverland.capstone.data.network.Resource
 import com.neverland.capstone.databinding.ActivityUploadBinding
+import com.neverland.capstone.ui.ResultActivity.Companion.RESULT_OBJ
+import com.neverland.capstone.util.BaseActivity
+import com.neverland.capstone.viewmodel.AnalyzeViewModel
+import com.neverland.capstone.viewmodel.ViewModelFactory
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
+import timber.log.Timber
+import java.io.File
 
-class UploadActivity : AppCompatActivity() {
+class UploadActivity : BaseActivity(), KodeinAware {
+
+    override val kodein by kodein()
+    private val viewModelFactory: ViewModelFactory by instance()
+
+    lateinit var viewModel: AnalyzeViewModel
 
     companion object {
         private const val MY_CAMERA_REQUEST_CODE = 100
@@ -32,23 +49,56 @@ class UploadActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(vbind.root)
 
-
+        setupViewModel()
         initPhoto()
 
-        vbind.btnScan.visibility= View.GONE
+        vbind.btnScan.visibility = View.GONE
         vbind.btnPickFile.setOnClickListener {
             takePicture()
         }
 
-        vbind.ivImg.clipToOutline=true
-
-        vbind.btnScan.setOnClickListener {
-            vbind.includeLoading.root.visibility=View.VISIBLE
-        }
+        vbind.ivImg.clipToOutline = true
 
         vbind.includeLoading.btnCancel.setOnClickListener {
-            vbind.includeLoading.root.visibility=View.GONE
+            vbind.includeLoading.root.visibility = View.GONE
         }
+
+        vbind.btnScan.setOnClickListener {
+            FileUtils.getFile(this, fileUpload.toUri())?.let { it1 ->
+                viewModel.uploadImage(it1).observe(this, Observer {
+                    when (it) {
+                        is Resource.Success -> {
+                            Timber.d("on upload success")
+                            vbind.includeLoading.root.visibility = View.GONE
+                            "Berhasil Mengupload Foto".showLongToast()
+                            val sendedObject = it.data
+                            startActivity(Intent(this,ResultActivity::class.java)
+                                .putExtra(RESULT_OBJ,it.data))
+                        }
+                        is Resource.Loading -> {
+                            Timber.d("on upload loading")
+                            vbind.includeLoading.root.visibility = View.VISIBLE
+                        }
+                        is Resource.Error -> {
+                            Timber.d("on upload error")
+                            "Gagal Mengupload Foto".showLongToast()
+                            vbind.includeLoading.root.visibility = View.GONE
+                        }
+                        else -> {
+                        }
+                    }
+                })
+            }
+        }
+
+    }
+
+    private fun observeLiveData() {
+
+    }
+
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(this, viewModelFactory).get(AnalyzeViewModel::class.java)
     }
 
     private fun initPhoto() {
@@ -64,7 +114,7 @@ class UploadActivity : AppCompatActivity() {
     }
 
     private fun takePicture() {
-        Toast.makeText(this,"Take Picture",Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Take Picture", Toast.LENGTH_LONG).show()
         CropImage.activity()
             .setGuidelines(CropImageView.Guidelines.ON)
             .start(this);
@@ -77,8 +127,8 @@ class UploadActivity : AppCompatActivity() {
             val result = CropImage.getActivityResult(data)
             if (resultCode == Activity.RESULT_OK) {
                 val resultUri: Uri = result.uri
-                vbind.btnScan.visibility=View.VISIBLE
 
+                vbind.btnScan.visibility = View.VISIBLE
                 vbind.btnPickFile.text = "Changes"
                 vbind.ivImg.setImageURI(resultUri.path?.toUri())
                 fileUpload = resultUri.toString();
