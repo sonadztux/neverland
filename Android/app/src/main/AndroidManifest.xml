@@ -14,7 +14,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Capstone">
-        <activity android:name=".ui.ResultActivity" />
+        <activity
+            android:theme="@style/Theme.Capstone.Fullscreen"
+            android:name=".ui.ResultActivity" >
+
+        </activity>
         <activity
             android:name=".ui.UploadActivity"
             android:theme="@style/Theme.Capstone.Fullscreen" />

@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.neverland.capstone.R
 import com.neverland.capstone.data.network.Resource
 import com.neverland.capstone.databinding.ActivityUploadBinding
+import com.neverland.capstone.ui.ResultActivity.Companion.RESULT_OBJ
 import com.neverland.capstone.util.BaseActivity
 import com.neverland.capstone.viewmodel.AnalyzeViewModel
 import com.neverland.capstone.viewmodel.ViewModelFactory
@@ -70,6 +71,9 @@ class UploadActivity : BaseActivity(), KodeinAware {
                             Timber.d("on upload success")
                             vbind.includeLoading.root.visibility = View.GONE
                             "Berhasil Mengupload Foto".showLongToast()
+                            val sendedObject = it.data
+                            startActivity(Intent(this,ResultActivity::class.java)
+                                .putExtra(RESULT_OBJ,it.data))
                         }
                         is Resource.Loading -> {
                             Timber.d("on upload loading")
