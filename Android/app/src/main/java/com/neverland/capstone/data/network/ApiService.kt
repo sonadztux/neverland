@@ -7,10 +7,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-private const val baseUrl = "https://fl09uoxzhb.execute-api.ap-southeast-1.amazonaws.com/prod/"
 
 object ApiService {
-
+    private const val baseUrl = "https://asia-southeast2-neverland-b21-cap0002.cloudfunctions.net"
     fun getClient(): CapstoneEndpoint {
 
         val logging = HttpLoggingInterceptor()
