@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Capstone</string>
+    <string name="created_by_neverland">Created By Neverland</string>
+    <string name="put_your_image_here">Your Image Here!</string>
+    <string name="upload_your_image_here">Upload Your Image Here</string>
+    <string name="requirements_of_image">Requirements of Image</string>
+    <string name="analyze">Analyze</string>
+    <string name="select_file">Select File</string>
+    <string name="loading">Loading . . .</string>
+    <string name="example">example</string>
+</resources>
