@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/ic_gradient_main">
+
+    <ImageView
+        android:layout_width="182dp"
+        android:layout_height="182dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/splash_screen"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:textAlignment="center"
+        android:textColor="@color/green_main"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/created_by_neverland"/>
+
+</LinearLayout>
