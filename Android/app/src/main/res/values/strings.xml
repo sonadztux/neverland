@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Capstone</string>
+    <string name="app_name">Photocuration</string>
     <string name="created_by_neverland">Created By Neverland</string>
     <string name="put_your_image_here">Your Image Here!</string>
     <string name="upload_your_image_here">Upload Your Image Here</string>
@@ -8,4 +8,7 @@
     <string name="select_file">Select File</string>
     <string name="loading">Loading . . .</string>
     <string name="example">example</string>
+    <string name="lorem_ipsum">This application uses CNN (Convolutional Neural Network based) architecture to detect fake or real face images. CNN is a type of neural network where this method can be used on image data. CNN has the ability to recognize objects in an image. Overall the dataset used has more than 1000 data. This face detection system uses python, tensorflow and keras as an open source Machine Learning library for neural networks, which was developed to create implementations of deep learning models.
+
+Related research paper: https://arxiv.org/pdf/1906.05856.pdf</string>
 </resources>

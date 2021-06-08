@@ -33,16 +33,17 @@
             <LinearLayout
                 android:id="@+id/img_container"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="200dp"
                 android:layout_margin="20dp"
+                android:background="@drawable/rounded_bordered"
                 android:gravity="center">
+
 
                 <ImageView
                     android:id="@+id/iv_img"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/ic_box"
-                    android:scaleType="fitXY" />
+                    />
 
             </LinearLayout>
 

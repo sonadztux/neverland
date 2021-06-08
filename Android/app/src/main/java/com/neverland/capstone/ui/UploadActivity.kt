@@ -14,6 +14,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.androidnetworking.AndroidNetworking
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.neverland.capstone.R
 import com.neverland.capstone.data.network.Resource
 import com.neverland.capstone.databinding.ActivityUploadBinding
@@ -28,6 +32,7 @@ import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.io.File
+import java.io.IOException
 
 class UploadActivity : BaseActivity(), KodeinAware {
 
@@ -52,9 +57,28 @@ class UploadActivity : BaseActivity(), KodeinAware {
         setupViewModel()
         initPhoto()
 
+        // High-accuracy landmark detection and face classification
+        val highAccuracyOpts = FaceDetectorOptions.Builder()
+            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+            .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+            .build()
+
+        // Real-time contour detection
+        val realTimeOpts = FaceDetectorOptions.Builder()
+            .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+            .build()
+
+
         vbind.btnScan.visibility = View.GONE
         vbind.btnPickFile.setOnClickListener {
             takePicture()
+        }
+
+        vbind.includeLoading.btnCancel.setOnClickListener {
+            vbind.includeLoading.root.visibility = View.GONE
+            AndroidNetworking.cancelAll(); // All the requests will be cancelled.
+            AndroidNetworking.forceCancelAll(); // All the requests will be cancelled , even if any percent threshold is set ,
         }
 
         vbind.ivImg.clipToOutline = true
@@ -72,8 +96,10 @@ class UploadActivity : BaseActivity(), KodeinAware {
                             vbind.includeLoading.root.visibility = View.GONE
                             "Berhasil Mengupload Foto".showLongToast()
                             val sendedObject = it.data
-                            startActivity(Intent(this,ResultActivity::class.java)
-                                .putExtra(RESULT_OBJ,it.data))
+                            startActivity(
+                                Intent(this, ResultActivity::class.java)
+                                    .putExtra(RESULT_OBJ, it.data)
+                            )
                         }
                         is Resource.Loading -> {
                             Timber.d("on upload loading")
@@ -93,9 +119,6 @@ class UploadActivity : BaseActivity(), KodeinAware {
 
     }
 
-    private fun observeLiveData() {
-
-    }
 
     private fun setupViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(AnalyzeViewModel::class.java)
@@ -114,6 +137,7 @@ class UploadActivity : BaseActivity(), KodeinAware {
     }
 
     private fun takePicture() {
+        resetBorderedBg()
         Toast.makeText(this, "Take Picture", Toast.LENGTH_LONG).show()
         CropImage.activity()
             .setGuidelines(CropImageView.Guidelines.ON)
@@ -127,17 +151,70 @@ class UploadActivity : BaseActivity(), KodeinAware {
             val result = CropImage.getActivityResult(data)
             if (resultCode == Activity.RESULT_OK) {
                 val resultUri: Uri = result.uri
+                val image: InputImage
+                try {
+                    image = InputImage.fromFilePath(this, resultUri)
+                    val highAccuracyOpts = FaceDetectorOptions.Builder()
+                        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+                        .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+                        .build()
 
-                vbind.btnScan.visibility = View.VISIBLE
-                vbind.btnPickFile.text = "Changes"
-                vbind.ivImg.setImageURI(resultUri.path?.toUri())
-                fileUpload = resultUri.toString();
+                    vbind.ivImg.setImageURI(resultUri.path?.toUri())
+
+
+                    val detector = FaceDetection.getClient(highAccuracyOpts)
+                    detector.process(image)
+                        .addOnSuccessListener { faces ->
+                            when {
+                                faces.size > 1 -> {
+                                    resetBorderedBg()
+                                    "${faces.size} Wajah Terdeteksi , Anda hanya dapat mendeteksi 1 wajah".showLongToast()
+                                }
+                                faces.size == 0 -> {
+                                    resetBorderedBg()
+                                    "Tidak ada Wajah Terdeteksi".showLongToast()
+                                }
+                                else -> {
+                                    vbind.imgContainer.background = null
+                                    vbind.btnScan.visibility = View.VISIBLE
+                                    vbind.btnPickFile.text = "Changes"
+                                    fileUpload = resultUri.toString();
+                                    "${faces.size} Wajah Terdeteksi".showLongToast()
+                                }
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Timber.e("error${e}")
+                            resetBorderedBg()
+                            "Wajah Tidak Terdeteksi, Silakan Pilih Wajah Lain".showLongToast()
+                        }
+
+
+                } catch (e: IOException) {
+                    vbind.imgContainer.background =
+                        (ContextCompat.getDrawable(this, R.drawable.rounded_bordered))
+                    e.printStackTrace()
+                }
+
+
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                vbind.imgContainer.background =
+                    (ContextCompat.getDrawable(this, R.drawable.rounded_bordered))
                 Toast.makeText(this, "Camera Error", Toast.LENGTH_SHORT).show()
             }
         } else {
+            vbind.imgContainer.background =
+                (ContextCompat.getDrawable(this, R.drawable.rounded_bordered))
             Toast.makeText(this, "Result Code Unknown", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun resetBorderedBg() {
+        vbind.btnScan.visibility = View.GONE
+        vbind.btnPickFile.text = "Select File"
+        vbind.imgContainer.background =
+            (ContextCompat.getDrawable(this, R.drawable.rounded_bordered))
     }
 
 

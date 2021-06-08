@@ -1,12 +1,8 @@
 package com.neverland.capstone.ui
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import com.bumptech.glide.Glide
 import com.neverland.capstone.R
 import com.neverland.capstone.data.remote.UploadResponse
@@ -14,9 +10,6 @@ import com.neverland.capstone.databinding.ActivityResultBinding
 import com.neverland.capstone.util.BaseActivity
 import nl.dionsegijn.konfetti.models.Shape
 import nl.dionsegijn.konfetti.models.Size
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 
 class ResultActivity : BaseActivity() {
@@ -49,13 +42,13 @@ class ResultActivity : BaseActivity() {
                 .streamFor(300, 5000L)
             showSweetAlert(
                 "Real",
-                "Gambarmu Terdeksi Real dengan probabilitas ${objectResult?.result}",
+                "your image is detected as genuine with authenticity level of ${objectResult.result}",
                 R.color.alerter_default_success_background
             )
         } else {
             showSweetAlert(
                 "Fake",
-                "Gambarmu Terdeksi Palsu atau Telah Diedit dengan probabilitas ${objectResult?.result}",
+                "your image is detected as genuine with authenticity level of ${objectResult?.result}",
                 R.color.alert_default_error_background
             )
         }
@@ -73,38 +66,34 @@ class ResultActivity : BaseActivity() {
                 .into(binding.resultImage)
         }
 
-        binding.btnShare.setOnClickListener {
-
+        binding.btnTryOther.setOnClickListener {
+            finish()
+            super.onBackPressed()
         }
 
+
+
+        binding.btnShare.setOnClickListener {
+            objectResult?.let { it1 -> share(it1) }
+        }
     }
 
-    fun shareImage(){
-        val shareIntent: Intent
-        val bitmap = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
-        var path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            .toString() + "/Share.png"
-        var out: OutputStream? = null
-        val file = File(path)
-        try {
-            out = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-            out.flush()
-            out.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        path = file.path
-        val bmpUri = Uri.parse("file://$path")
-        shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri)
-        shareIntent.putExtra(
-            Intent.EXTRA_TEXT,
-            "Hey please check this application https://play.google.com/store/apps/details?id=$packageName"
+    private fun share(model: UploadResponse) {
+        val intent = Intent(Intent.ACTION_SEND)
+        /*This will be the actual content you wish you share.*/
+        val shareBody = "Hi guys, i just use Photocuration app \n" +
+                "to detect the level of authenticity of faces in images with an authenticity level with result ${model.result},\n" +
+                "link : ${model.imgOutputUrl}.\n\n" +
+                "Download Photocuration to try your own !"
+        intent.type = "text/plain"
+        /*Applying information Subject and Body.*/
+        intent.putExtra(
+            Intent.EXTRA_SUBJECT,
+            "test"
         )
-        shareIntent.type = "image/png"
-        startActivity(Intent.createChooser(shareIntent, "Share with"))
+        intent.putExtra(Intent.EXTRA_TEXT, shareBody)
+        /*Fire!*/
+        /*Fire!*/startActivity(Intent.createChooser(intent, "Share"))
     }
 
 
