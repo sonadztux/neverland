@@ -1,0 +1,9 @@
+# Function dependencies, for example:
+# package>=version
+google-cloud-storage==1.38.0
+Flask==1.1.4
+tensorflow==2.4.1
+numpy==1.19.5
+opencv-python==4.5.2.52
+imutils==0.5.4
+Keras==2.4.3
