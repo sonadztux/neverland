@@ -1,0 +1,19 @@
+Documentation:
+1. Download dataset and put into your gdrive (when you running the model in collab) or put into your folder that same with your model
+2. Split your data into training and validation data using sklearn
+3. Create the training and validation batch using train generator
+4. Doing the pre processing data using one hot encoding
+5. Build the CNN Model
+6. Train the model
+7. Evaluate the model by plotting the model performance graph.
+8. Save the model into .json and .h5
+
+
+Dataset Link:
+https://drive.google.com/drive/folders/1r4K5MRtqkqJ-G7ii9_d-d9cytIA69NJD?usp=sharing
+
+Classes:
+There are 2 types of food to be classified:
+
+Real
+Fake
