@@ -1,6 +1,6 @@
 
-# Foories - Android
-Food Classification, Detection, and Calories Measurement
+# Photocuration
+Predict manipulated images focused on human faces
 
 ## Description
 Branch for Foories  Android application. Contains architecture, used library, and steps to reproduce
