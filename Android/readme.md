@@ -41,6 +41,7 @@ Foories use some library to support the functionality of the application
 	
 7. Firebase ML Kit
 
+	Detect Face before sended to Server
 
 ### Architecture
 This implements Clean Architecture combining with Model-View-ViewModel (MVVM) 
