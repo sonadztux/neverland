@@ -3,7 +3,7 @@
 Predict manipulated images focused on human faces
 
 ## Description
-Branch for Foories  Android application. Contains architecture, used library, and steps to reproduce
+Branch for Photocuration Android application. Contains architecture, used library, and steps to reproduce
 
 ## Table of Content
 
