@@ -17,7 +17,7 @@ Branch for Photocuration machine learning model.
 
 ## Dataset
 We combine Peter Wang et al. dataset with dataset that we collect. There is 3584 total face images, 2052 real face images and 1532 manipulated face images.
-[DATASET &rarr;](https://drive.google.com/drive/folders/1r4K5MRtqkqJ-G7ii9_d-d9cytIA69NJD?usp=sharing)
+[DATASET &rarr;](https://drive.google.com/file/d/1yv_kM52isjpZgGm0AcAk-i426tMTpbGc/view?usp=sharing)
 
 ## Classes
 There are 2 types of human face image to be classified measures on the eyes, nose, and mouth: Real or Fake.
